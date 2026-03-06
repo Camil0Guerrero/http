@@ -1,0 +1,9 @@
+PUT http://localhost:3001/users/aa4d4562-c2a8-41e8-a56c-e6132756122e
+Content-Type: application/json
+
+{
+  "id": "aa4d4562-c2a8-41e8-a56c-e6132756122e",
+  "name": "Camilo",
+  "email": "camilo@gmail.com",
+  "password": "Camilo_123"
+}

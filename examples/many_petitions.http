@@ -1,0 +1,16 @@
+@api_url = http://localhost:3001
+@uuid = aa4d4562-c2a8-41e8-a56c-e6132756122e
+
+### Check the status of the server
+GET {{api_url}}/status
+
+### Create a user
+PUT {{api_url}}/users/{{uuid}}
+Content-Type: application/json
+
+{
+  "id": "{{uuid}}",
+  "name": "Camilo",
+  "email": "camilo@gmail.com",
+  "password": "Camilo_123"
+}
