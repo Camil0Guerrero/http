@@ -9,11 +9,11 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatal("Uso: http <nombre_archivo>.http")
+		log.Fatal("Usage: archive.http")
 	}
 
 	cnt, err := os.ReadFile(os.Args[1])
-	check(err, "Error al leer el archivo")
+	check(err, "Failed to read file")
 
 	content := string(cnt)
 
@@ -27,17 +27,16 @@ func main() {
 	var wg sync.WaitGroup
 
 	for _, petition := range petitions {
-		// 2. Indicar que hay una tarea pendiente
+		// Indicate a pending task
 		wg.Add(1)
 
 		go func(p string) {
-			// 4. Indicar que la tarea terminó al salir de la función
+			// Indicate task finished
 			defer wg.Done()
 			processPetition(p)
-		}(petition) // Pasar la petición como argumento para evitar colisiones de memoria
+		}(petition)
 	}
 
-	// 3. Bloquear el main hasta que el contador de wg llegue a cero
 	wg.Wait()
 }
 

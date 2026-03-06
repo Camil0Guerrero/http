@@ -27,7 +27,7 @@ func processPetition(petition string) {
 	}
 
 	if method == "DELETE" {
-		log.Print("Pronto")
+		log.Print("Not implemented yet")
 		return
 	}
 
@@ -45,5 +45,5 @@ func processPetition(petition string) {
 		return
 	}
 
-	log.Print("procesamos las demás peticiones")
+	log.Print("Not implemented yet")
 }

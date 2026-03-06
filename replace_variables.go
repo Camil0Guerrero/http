@@ -5,23 +5,22 @@ import (
 	"strings"
 )
 
-// ToDo: clarify the logic
 func ReplaceVariables(variables map[string]string, input string) string {
-	// {{          -> Coincide con las llaves de apertura literal
-	// ([^{}]+)    -> Captura uno o más caracteres que NO sean llaves (el nombre de la variable)
-	// }}          -> Coincide con las llaves de cierre literal
+	// {{       -> Matches literal opening braces
+	// ([^{}]+) -> Captures one or more characters that are NOT braces (variable name)
+	// }}       -> Matches literal closing braces
 	re := regexp.MustCompile(`{{([^{}]+)}}`)
 
 	result := re.ReplaceAllStringFunc(input, func(match string) string {
-		// match será algo como "{{api_url}}"
-		// Limpiamos las llaves para obtener solo la clave "api_url"
+		// match will look like "{{api_url}}"
+		// Trim braces and spaces to get only the key "api_url"
 		key := strings.Trim(match, "{} ")
 
-		// Buscamos en el mapa. Si no existe, dejamos el original o un string vacío
+		// Search in the map. If not found, return the original placeholder
 		if val, ok := variables[key]; ok {
 			return val
 		}
-		return match // Si no la encuentra, devuelve {{variable}} tal cual
+		return match // Variable not found, return as is.{{api_url}}
 	})
 
 	return result

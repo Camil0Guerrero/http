@@ -6,41 +6,39 @@ import (
 	"strings"
 )
 
-// ExtractPetitions toma todo el texto del archivo y devuelve un slice
-// con cada bloque de petición (método, url, body, headers) limpio de títulos ###.
+// Separate the petitions by the title (###)
+// Remove the title (###)
 func ExtractPetitions(content string) []string {
 	var petitions []string
-	var currentPetition strings.Builder // Builder es más eficiente que concatenar strings en bucles
+	var currentPetition strings.Builder // Is used to efficiently build a string using Builder.Write methods
 
-	// Convertimos el string gigante en algo que podemos leer línea por línea
 	reader := strings.NewReader(content)
 	scanner := bufio.NewScanner(reader)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// 1. Detectamos el separador de bloques
 		if strings.HasPrefix(line, "###") {
-			// Si ya estábamos construyendo una petición, la guardamos y empezamos una nueva
+			// Add the current petition and initialize a new one
 			if currentPetition.Len() > 0 {
 				petitions = append(petitions, strings.TrimSpace(currentPetition.String()))
 				currentPetition.Reset()
 			}
 
-			// Como es un separador ### (título), NO lo añadimos a currentPetition.
+			// Don't add the title
 			continue
 		}
 
-		// 2. Si no es un título, es parte de la petición. Lo añadimos.
+		// Add the line to the current petition
 		currentPetition.WriteString(line)
-		currentPetition.WriteString("\n") // Restauramos el salto de línea que scanner.Text() quita
+		// Keep the format of the petition
+		currentPetition.WriteString("\n")
 	}
 
-	// 3. Al terminar el bucle, capturamos la última petición si existe
 	if currentPetition.Len() > 0 {
 		petitions = append(petitions, strings.TrimSpace(currentPetition.String()))
 	}
 
-	log.Printf("Parser: Encontradas %d peticiones limpias.", len(petitions))
+	log.Printf("Parser: Find %d petitions", len(petitions))
 	return petitions
 }

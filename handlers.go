@@ -12,7 +12,7 @@ import (
 
 func Get(uri string) {
 	res, err := http.Get(uri)
-	check(err, "Error al realizar la petición GET")
+	check(err, "Error while executing GET request")
 
 	defer res.Body.Close()
 
@@ -26,13 +26,13 @@ type Headers struct {
 
 func Put(uri string, headers Headers, body string) {
 	req, err := http.NewRequest("PUT", uri, convertToBuffer(body))
-	check(err, "Error al crear la petición PUT")
+	check(err, "PUT request could not be created")
 
 	req.Header.Set(headers.Type, headers.Value)
 	client := &http.Client{}
 
 	res, err := client.Do(req)
-	check(err, "Error al realizar la petición PUT")
+	check(err, "Error while executing PUT request")
 
 	defer res.Body.Close()
 
@@ -42,10 +42,10 @@ func Put(uri string, headers Headers, body string) {
 func convertToBuffer(body string) *bytes.Buffer {
 	var obj map[string]interface{}
 	err := json.Unmarshal([]byte(body), &obj)
-	check(err, "Error al convertir el body a JSON")
+	check(err, "Error parsing JSON")
 
 	jsonData, err := json.Marshal(obj)
-	check(err, "Error al convertir el body a JSON")
+	check(err, "Could not convert JSON")
 
 	return bytes.NewBuffer(jsonData)
 }
