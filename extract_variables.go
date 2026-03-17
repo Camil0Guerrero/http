@@ -2,9 +2,7 @@ package main
 
 import "strings"
 
-func ExtractAndRemoveVariables(content string) (map[string]string, string) {
-	var variables = make(map[string]string)
-
+func ExtractAndRemoveVariables(variables map[string]string, content string) string {
 	// Separate the header from the content
 	parts := strings.SplitN(content, "\n\n", 2)
 
@@ -21,5 +19,5 @@ func ExtractAndRemoveVariables(content string) (map[string]string, string) {
 		variables[strings.Trim(split[0], " ")] = strings.Trim(contentSerialized[1], "\n")
 	}
 
-	return variables, strings.Join(parts[1:], "")
+	return strings.Join(parts[1:], "")
 }

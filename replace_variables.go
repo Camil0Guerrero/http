@@ -1,27 +1,19 @@
 package main
 
 import (
-	"regexp"
 	"strings"
 )
 
 func ReplaceVariables(variables map[string]string, input string) string {
-	// {{       -> Matches literal opening braces
-	// ([^{}]+) -> Captures one or more characters that are NOT braces (variable name)
-	// }}       -> Matches literal closing braces
-	re := regexp.MustCompile(`{{([^{}]+)}}`)
+	var args []string
 
-	result := re.ReplaceAllStringFunc(input, func(match string) string {
-		// match will look like "{{api_url}}"
-		// Trim braces and spaces to get only the key "api_url"
-		key := strings.Trim(match, "{} ")
+	for key, value := range variables {
+		target := "{{" + key + "}}"
+		args = append(args, target, value)
+	}
 
-		// Search in the map. If not found, return the original placeholder
-		if val, ok := variables[key]; ok {
-			return val
-		}
-		return match // Variable not found, return as is.{{api_url}}
-	})
+	// Replacer expect a list of pairs: old, new, old2, new2, ...
+	replacer := strings.NewReplacer(args...)
 
-	return result
+	return replacer.Replace(input)
 }

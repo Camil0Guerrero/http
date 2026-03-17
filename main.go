@@ -9,17 +9,29 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatal("Usage: archive.http")
+		log.Fatal("Usage: ./http archive.http")
 	}
 
 	cnt, err := os.ReadFile(os.Args[1])
 	check(err, "Failed to read file")
 
+	variables := make(map[string]string)
+
+	if len(os.Args) >= 2 {
+		envCnt, err := os.ReadFile(os.Args[2])
+		check(err, "Failed to read environment file")
+
+		ExtractVariablesFromJSON(variables, envCnt)
+	}
+
 	content := string(cnt)
 
 	if hasVariables(content) {
-		variables, trimmed := ExtractAndRemoveVariables(content)
-		content = ReplaceVariables(variables, trimmed)
+		content = ExtractAndRemoveVariables(variables, content)
+	}
+
+	if len(variables) > 0 {
+		content = ReplaceVariables(variables, content)
 	}
 
 	petitions := ExtractPetitions(content)
