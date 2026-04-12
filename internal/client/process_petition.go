@@ -1,11 +1,11 @@
-package main
+package client
 
 import (
 	"log"
 	"strings"
 )
 
-func processPetition(petition string) {
+func ProcessPetition(petition string) {
 	split := strings.Split(petition, "\n")
 
 	var method string

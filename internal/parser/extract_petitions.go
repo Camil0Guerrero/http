@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"bufio"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Separate the petitions by the title (###)
+// ExtractPetitions Separate the petitions by the title (###)
 // Remove the title (###)
 func ExtractPetitions(content string) []string {
 	var petitions []string

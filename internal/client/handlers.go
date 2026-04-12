@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bytes"
@@ -10,13 +10,21 @@ import (
 	"os"
 )
 
-func Get(uri string) {
+func Get(uri string) *http.Response {
 	res, err := http.Get(uri)
-	check(err, "Error while executing GET request")
+	if err != nil {
+		log.Fatal("Error while Executing GET request", err)
+	}
 
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatal("Error while closing response body", err)
+		}
+	}(res.Body)
 
 	printResponse(res)
+	return res
 }
 
 type Headers struct {
@@ -24,28 +32,42 @@ type Headers struct {
 	Value string
 }
 
-func Put(uri string, headers Headers, body string) {
+func Put(uri string, headers Headers, body string) *http.Response {
 	req, err := http.NewRequest("PUT", uri, convertToBuffer(body))
-	check(err, "PUT request could not be created")
+	if err != nil {
+		log.Fatal("Error Creating PUT request", err)
+	}
 
 	req.Header.Set(headers.Type, headers.Value)
 	client := &http.Client{}
 
 	res, err := client.Do(req)
-	check(err, "Error while executing PUT request")
+	if err != nil {
+		log.Fatal("Error while Executing PUT request", err)
+	}
 
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatal("Error while closing response body", err)
+		}
+	}(res.Body)
 
 	printResponse(res)
+	return res
 }
 
 func convertToBuffer(body string) *bytes.Buffer {
 	var obj map[string]interface{}
 	err := json.Unmarshal([]byte(body), &obj)
-	check(err, "Error parsing JSON")
+	if err != nil {
+		log.Fatal("Error Parsing JSON", err)
+	}
 
 	jsonData, err := json.Marshal(obj)
-	check(err, "Could not convert JSON")
+	if err != nil {
+		log.Fatal("Could not convert JSON", err)
+	}
 
 	return bytes.NewBuffer(jsonData)
 }

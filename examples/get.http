@@ -1,1 +1,1 @@
-GET {{api_url}}/status
+GET http://localhost:3001/status
