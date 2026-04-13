@@ -1,19 +1,26 @@
 package client
 
 import (
-	"log"
+	"errors"
 	"strings"
 )
 
-func ProcessPetition(petition string) {
-	split := strings.Split(petition, "\n")
+type Request struct {
+	Method     string
+	URI        string
+	Body       string
+	StatusCode int
+}
+
+func ProcessRequest(request string) (data Request, err error) {
+	split := strings.Split(request, "\n")
 
 	var method string
 	var uri string
 	var parts []string
 
 	if len(split) < 2 {
-		parts = strings.Split(petition, " ")
+		parts = strings.Split(request, " ")
 	} else {
 		parts = strings.Split(split[0], " ")
 	}
@@ -22,13 +29,11 @@ func ProcessPetition(petition string) {
 	uri = parts[1]
 
 	if method == "GET" {
-		Get(uri)
-		return
+		return Get(uri), nil
 	}
 
 	if method == "DELETE" {
-		log.Print("Not implemented yet")
-		return
+		return Request{}, errors.New("not implemented yet")
 	}
 
 	headers := strings.Split(split[1], " ")
@@ -41,9 +46,8 @@ func ProcessPetition(petition string) {
 	body = strings.ReplaceAll(body, "\n", "")
 
 	if method == "PUT" {
-		Put(uri, header, body)
-		return
+		return Put(uri, header, body), nil
 	}
 
-	log.Print("Not implemented yet")
+	return Request{}, errors.New("method not supported")
 }

@@ -10,21 +10,27 @@ import (
 	"os"
 )
 
-func Get(uri string) *http.Response {
+func Get(uri string) Request {
 	res, err := http.Get(uri)
 	if err != nil {
 		log.Fatal("Error while Executing GET request", err)
 	}
+	defer res.Body.Close()
 
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Fatal("Error while closing response body", err)
-		}
-	}(res.Body)
+	resBody := res.Body
+	body, err := io.ReadAll(resBody)
+	if err != nil {
+		log.Fatal("Error while reading response body", err)
+	}
 
 	printResponse(res)
-	return res
+
+	return Request{
+		Method:     res.Request.Method,
+		URI:        res.Request.URL.String(),
+		Body:       string(body),
+		StatusCode: res.StatusCode,
+	}
 }
 
 type Headers struct {
@@ -32,7 +38,7 @@ type Headers struct {
 	Value string
 }
 
-func Put(uri string, headers Headers, body string) *http.Response {
+func Put(uri string, headers Headers, body string) Request {
 	req, err := http.NewRequest("PUT", uri, convertToBuffer(body))
 	if err != nil {
 		log.Fatal("Error Creating PUT request", err)
@@ -45,16 +51,15 @@ func Put(uri string, headers Headers, body string) *http.Response {
 	if err != nil {
 		log.Fatal("Error while Executing PUT request", err)
 	}
-
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Fatal("Error while closing response body", err)
-		}
-	}(res.Body)
+	defer res.Body.Close()
 
 	printResponse(res)
-	return res
+	return Request{
+		Method:     res.Request.Method,
+		URI:        res.Request.URL.String(),
+		Body:       body,
+		StatusCode: res.StatusCode,
+	}
 }
 
 func convertToBuffer(body string) *bytes.Buffer {
